@@ -1,19 +1,19 @@
-"use client";
 import { MenuIcon } from "lucide-react";
-import { useState } from "react";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "../ui/sheet";
-import { navItems } from "@/lib/data";
 import { DashboardNav } from "./dashboardnav";
+import { getCurrentUser } from "@/app/actions/login";
 
-export function MobileSidebar() {
-  const [open, setOpen] = useState(false);
+export async function MobileSidebar() {
+  // const [open, setOpen] = useState(false);
+  const user = await getCurrentUser();
+
   return (
     <>
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet>
         <SheetTrigger asChild>
           <MenuIcon />
         </SheetTrigger>
-        <SheetTitle className="hidden">Menu</SheetTitle>
+        <SheetTitle></SheetTitle>
         <SheetContent side="left" className="!px-0">
           <div className="space-y-4 py-4">
             <div className="px-3 py-2">
@@ -21,7 +21,7 @@ export function MobileSidebar() {
                 Overview
               </h2>
               <div className="space-y-1">
-                <DashboardNav items={navItems} setOpen={setOpen} />
+                <DashboardNav user={user} />
               </div>
             </div>
           </div>

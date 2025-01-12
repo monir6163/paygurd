@@ -6,55 +6,75 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icons } from "./icon";
 
-export function DashboardNav({ items, setOpen, user }: any) {
+export function DashboardNav({ user }: any) {
   const path = usePathname();
-
-  if (!items?.length) {
-    return null;
-  }
-
-  // Filter items based on user role
-  const filteredItems = items.filter(
-    (item: { role?: string }) =>
-      !item.role || item.role === user?.user_metadata?.user_role
-  );
 
   return (
     <nav className="grid items-start gap-2">
-      {filteredItems.map(
-        (
-          item: {
-            icon?: keyof typeof Icons;
-            href?: string;
-            disabled?: boolean;
-            title?: string;
-          },
-          index: number
-        ) => {
-          const Icon = Icons[item.icon ?? "arrowRight"];
-          return (
-            item.href && (
-              <Link
-                key={index}
-                href={item.disabled ? "/" : item.href}
-                onClick={() => {
-                  if (setOpen) setOpen(false);
-                }}
-              >
-                <span
-                  className={cn(
-                    "group flex items-center rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground",
-                    path === item.href ? "bg-accent" : "transparent",
-                    item.disabled && "cursor-not-allowed opacity-80"
-                  )}
-                >
-                  <Icon className="mr-2 h-4 w-4" />
-                  <span>{item.title}</span>
-                </span>
-              </Link>
-            )
-          );
-        }
+      <Link href="/dashboard">
+        <div
+          className={cn(
+            "flex items-center px-3 py-2 rounded-md",
+            path === "/dashboard" && "bg-gray-100 text-gray-900"
+          )}
+        >
+          <Icons.dashboard className="w-6 h-6 mr-2" />
+          Dashboard
+        </div>
+      </Link>
+      {user?.user_metadata?.user_role === "user" && (
+        <>
+          <Link href="/dashboard/payments">
+            <div
+              className={cn(
+                "flex items-center px-3 py-2 rounded-md",
+                path === "/dashboard/payments" && "bg-gray-100 text-gray-900"
+              )}
+            >
+              <Icons.payment className="w-6 h-6 mr-2" />
+              Payments
+            </div>
+          </Link>
+          <Link href="/dashboard/documents">
+            <div
+              className={cn(
+                "flex items-center px-3 py-2 rounded-md",
+                path === "/dashboard/documents" && "bg-gray-100 text-gray-900"
+              )}
+            >
+              <Icons.page className="w-6 h-6 mr-2" />
+              Documents
+            </div>
+          </Link>
+        </>
+      )}
+      {user?.user_metadata?.user_role === "admin" && (
+        <>
+          <Link href="/dashboard/view-all-payments">
+            <div
+              className={cn(
+                "flex items-center px-3 py-2 rounded-md",
+                path === "/dashboard/view-all-payments" &&
+                  "bg-gray-100 text-gray-900"
+              )}
+            >
+              <Icons.payment className="w-6 h-6 mr-2" />
+              View All Payments
+            </div>
+          </Link>
+          <Link href="/dashboard/view-all-documents">
+            <div
+              className={cn(
+                "flex items-center px-3 py-2 rounded-md",
+                path === "/dashboard/view-all-documents" &&
+                  "bg-gray-100 text-gray-900"
+              )}
+            >
+              <Icons.page className="w-6 h-6 mr-2" />
+              View All Documents
+            </div>
+          </Link>
+        </>
       )}
     </nav>
   );
