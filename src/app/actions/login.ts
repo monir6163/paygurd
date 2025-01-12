@@ -39,8 +39,8 @@ export async function login(credintial: any) {
   }
 
   revalidatePath("/", "layout");
-  // redirect("/dashboard");
-  return { data: data };
+  redirect("/dashboard");
+  // return { data: data };
 }
 
 // register a new user

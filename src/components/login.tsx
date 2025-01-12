@@ -17,9 +17,8 @@ import Link from "next/link";
 import { login } from "@/app/actions/login";
 import { toast } from "sonner";
 import { loginSchema } from "../../utils/zod/login.types";
-import { useRouter } from "next/navigation";
+
 export default function Login() {
-  const { push } = useRouter();
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -31,10 +30,9 @@ export default function Login() {
 
   async function onSubmit(userData: any) {
     setIsSubmitting(true);
-    const { error, data } = await login(userData);
-    if (data) {
+    const { error } = await login(userData);
+    if (!error) {
       toast.success("Login successful");
-      push("/dashboard");
     }
     if (error) {
       toast.error(error as string);
