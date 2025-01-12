@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
@@ -16,7 +17,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { signup } from "@/app/actions/login";
 import { loginSchema } from "../../utils/zod/login.types";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 export default function Register() {
+  const { push } = useRouter();
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -26,12 +30,16 @@ export default function Register() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function onSubmit(data: any) {
+  async function onSubmit(userData: any) {
     try {
       setIsSubmitting(true);
-      await signup(data);
+      const { data } = await signup(userData);
+      if (data) {
+        toast.success("registration successful ! Check your email to verify");
+        push("/");
+      }
     } catch (error) {
-      console.error(error);
+      toast.error("registration failed");
     } finally {
       setIsSubmitting(false);
     }

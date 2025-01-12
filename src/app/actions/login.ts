@@ -39,15 +39,16 @@ export async function login(credintial: any) {
   }
 
   revalidatePath("/", "layout");
-  redirect("/dashboard");
+  // redirect("/dashboard");
+  return { data: data };
 }
 
 // register a new user
-export async function signup(data: any) {
+export async function signup(userData: any) {
   const supabase = await createClient();
   const authData = {
-    email: data.email,
-    password: data.password,
+    email: userData.email,
+    password: userData.password,
     options: {
       data: {
         user_role: "user",
@@ -56,14 +57,15 @@ export async function signup(data: any) {
     },
   };
 
-  const { error } = await supabase.auth.signUp(authData);
+  const { error, data } = await supabase.auth.signUp(authData);
 
-  if (error) {
-    return { error };
+  if (error || !data) {
+    return { error: "Invalid credintials" };
   }
 
   revalidatePath("/", "layout");
-  redirect("/");
+  // redirect("/");
+  return { data: data };
 }
 
 // get the current user
