@@ -9,14 +9,14 @@ interface MailOptions {
 // Create the transporter with proper type annotations
 const transporter: Transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || "smtp.gmail.com",
-  port: parseInt(process.env.EMAIL_PORT || "587", 10),
-  secure: process.env.NODE_ENV === "production", // Use TLS in production
+  port: 587,
+  secure: process.env.NODE_ENV === "production" ? true : false,
   auth: {
     user: process.env.AUTH_EMAIL,
     pass: process.env.AUTH_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: process.env.NODE_ENV === "production",
+    rejectUnauthorized: process.env.NODE_ENV === "production" ? true : false,
   },
 });
 
