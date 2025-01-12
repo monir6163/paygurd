@@ -53,7 +53,7 @@
 
 ## Tech Stack
 
-- **Frontend:** React.js, Tailwind CSS, TypeScript.
+- **Frontend:** Next.js, Tailwind CSS, TypeScript.
 - **Backend:** Next.js API Routes.
 - **Database:** PostgreSQL (Supabase).
 - **Storage:** Supabase Storage for document uploads.
@@ -74,9 +74,22 @@
 ### Installation
 
 1. Clone the repository:
+
    ```bash
-   git clone https://github.com/your-username/payguard.git
+   git clone https://github.com/monir6163/paygurd.git
    cd payguard
+   ```
+
+2. Install dependencies:
+   ```bash
+    npm install
+   ```
+3. Run the development server:
+
+   ```bash
+   npm run dev
+
+   # Open http://localhost:3000 to view it in the browser.
    ```
 
 ## Environment Variables
