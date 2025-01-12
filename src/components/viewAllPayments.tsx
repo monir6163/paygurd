@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { PaymentTypes } from "@/lib/types";
@@ -12,8 +13,9 @@ import {
 } from "./ui/table";
 import axios from "axios";
 import { toast } from "sonner";
+import AnalyticsCards from "./analyticsCards";
 
-export default function ViewAllPayments() {
+export default function ViewAllPayments({ analytics }: { analytics: any }) {
   const [filter, setFilter] = React.useState<string>("all");
   const [date, setDate] = React.useState<string>("");
   const [payments, setPayments] = React.useState<PaymentTypes[]>([]);
@@ -77,8 +79,9 @@ export default function ViewAllPayments() {
 
   return (
     <div>
+      <AnalyticsCards analytics={analytics} />
       {/* Filter with status and date */}
-      <div className="flex items-center gap-3 mb-4">
+      <div className="flex items-center gap-3 mb-4 mt-4">
         <div>
           <select
             onChange={handleFilter}

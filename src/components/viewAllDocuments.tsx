@@ -161,14 +161,14 @@ export default function ViewAllDocuments() {
                         className="max-w-full max-h-[600px] mx-auto"
                       />
                     )}
-                    <a
+                    {/* <a
                       href={selectedFile}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="mt-4 block text-blue-500 underline text-center"
                     >
                       Download File
-                    </a>
+                    </a> */}
                   </DialogContent>
                 </Dialog>
               </TableCell>
