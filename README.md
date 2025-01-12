@@ -78,3 +78,43 @@
    git clone https://github.com/your-username/payguard.git
    cd payguard
    ```
+
+## Environment Variables
+
+Create a `.env` file in the root directory and add the following environment variables:
+Check the `.env.example` file for reference.
+
+## API Endpoints
+
+1. Login&Signup Server Action
+2. Document Upload Server Action
+3. Create Payment Request and get all Payment Requests Current User
+   - POST /api/payments
+   - GET /api/payments
+4. Stripe Payment Intent and Invoice
+   - POST /api/payments/stripe
+   - GET /api/payments/invoice
+5. Update Payment Request Status and get all Payment Requests Admin
+   - PUT /api/admin/allPayments?params=''
+   - GET /api/admin/allPayments
+6. Update Document Status
+   - PUT /api/admin/allDocuments?params=''
+   - GET /api/admin/allDocuments
+7. Admin Dashboard Analytics, summary of total payments and breakdown by status
+   - GET /api/admin/analytics
+   - GET /api/admin/analytics/summery?params=''
+   - GET /api/admin/analytics/summery/user?params=''
+
+## Admin Credentials
+
+- **Email:** monirhossain6163@gmail.com
+- **Password:** 12345678
+
+## User Credentials
+
+- **Email:** lipipi8933@sfxeur.com
+- **Password:** 123456789
+
+## Live Demo
+
+The application is deployed on Vercel and can be accessed [here](https://payguard.vercel.app/).
