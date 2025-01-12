@@ -25,12 +25,12 @@ export async function GET() {
       }),
     ]);
 
-    const paymentStatusData = paymentStatusBreakdown.map((item) => ({
+    const paymentStatusData = paymentStatusBreakdown?.map((item) => ({
       status: item.status,
       count: item._count.status,
     }));
 
-    const documentStatusData = documentStatusBreakdown.map((item) => ({
+    const documentStatusData = documentStatusBreakdown?.map((item) => ({
       status: item.status,
       count: item._count.status,
     }));
