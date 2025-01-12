@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import AdminAnalyticsChart from "@/components/adminAnalyticsChart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
-import { toast } from "sonner";
 
 async function getAnalytics() {
   try {
@@ -11,7 +9,7 @@ async function getAnalytics() {
     );
     return data;
   } catch (error) {
-    toast.error("Failed to fetch analytics data");
+    console.log(error);
   }
 }
 
