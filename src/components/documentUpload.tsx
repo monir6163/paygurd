@@ -58,8 +58,8 @@ export default function DocumentUpload({ user }: { user: any }) {
       setUploading(true);
       const result = await uploadDocument(file, filePath, user);
       setUploading(false);
-      if ("error" in result) {
-        setErrorMessage(result.error.message);
+      if (!result) {
+        setErrorMessage("Failed to upload document");
         return;
       }
       setFile(null);
