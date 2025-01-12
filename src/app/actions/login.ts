@@ -17,7 +17,7 @@ export async function login(credintial: any) {
   const { error, data } = await supabase.auth.signInWithPassword(authData);
 
   if (error) {
-    return { error };
+    return { error: error.message };
   }
   //check existing user
   const { data: existingUser } = await supabase
