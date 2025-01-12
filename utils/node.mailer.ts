@@ -10,13 +10,13 @@ interface MailOptions {
 const transporter: Transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || "smtp.gmail.com",
   port: 587,
-  secure: process.env.NODE_ENV === "production" ? true : false,
+  secure: false,
   auth: {
     user: process.env.AUTH_EMAIL,
     pass: process.env.AUTH_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: process.env.NODE_ENV === "production" ? true : false,
+    rejectUnauthorized: false,
   },
 });
 
