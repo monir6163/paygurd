@@ -37,10 +37,10 @@ export default async function page() {
           </h2>
         </div>
         <div className="mt-8 w-full lg:w-11/12 p-0 bg-white rounded-lg shadow-md">
-          {analytics && user?.user_metadata?.user_role === "admin" && (
+          {user?.user_metadata?.user_role === "admin" && (
             <AdminAnalyticsChart analytics={analytics} />
           )}
-          {analytics && user?.user_metadata?.user_role === "user" && (
+          {user?.user_metadata?.user_role === "user" && (
             <UserSummary analytics={analytics?.userSummary} />
           )}
         </div>
