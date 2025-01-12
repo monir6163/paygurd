@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model payments {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title         String?       @db.VarChar
+  amount        Decimal?      @db.Decimal
+  status        String        @default("pending") @db.VarChar
+  user_id       String        @db.Uuid
+  created_at    DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime      @default(now()) @db.Timestamptz(6)
+  user_profiles user_profiles @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model user_profiles {
+  id         String      @id @default(dbgenerated("auth.uid()")) @db.Uuid
+  email      String?     @unique @db.VarChar
+  password   String?     @db.VarChar
+  role       String      @default("user") @db.VarChar
+  created_at DateTime    @default(now()) @db.Timestamptz(6)
+  documents  documents[]
+  payments   payments[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model documents {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  file_url      String?
+  status        String        @default("pending") @db.VarChar
+  uploaded_at   DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime      @default(now()) @db.Timestamp(6)
+  user_id       String        @db.Uuid
+  user_profiles user_profiles @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
