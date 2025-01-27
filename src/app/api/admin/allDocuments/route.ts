@@ -42,7 +42,6 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
-    console.log(documents);
     return NextResponse.json({
       data: documents,
       message: "documents fetched successfully",

@@ -85,6 +85,17 @@ export function DashboardNav({ user }: any) {
               View All Documents
             </div>
           </Link>
+          <Link href="/dashboard/invoices">
+            <div
+              className={cn(
+                "flex items-center px-3 py-2 rounded-md",
+                path === "/dashboard/invoices" && "bg-gray-100 text-gray-900"
+              )}
+            >
+              <Icons.page className="w-6 h-6 mr-2" />
+              Invoices
+            </div>
+          </Link>
         </>
       )}
     </nav>
