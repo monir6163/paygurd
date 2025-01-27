@@ -3,11 +3,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { useState } from "react";
 import { Input } from "./ui/input";
 
-export default function PaypalPayment({
-  user,
-}: {
-  user: { email: string; id: string };
-}) {
+export default function PaypalPayment() {
   const [amount, setAmount] = useState<number>(1);
 
   return (
