@@ -12,6 +12,13 @@ export const navItems = [
     label: "Payments",
     role: "user",
   },
+  {
+    title: "Paypal Payments",
+    href: "/dashboard/paypal-payments",
+    icon: "payment",
+    label: "Paypal Payments",
+    role: "user",
+  },
 
   {
     title: "Documents",
@@ -32,6 +39,13 @@ export const navItems = [
     href: "/dashboard/view-all-documents",
     icon: "page",
     label: "View All Documents",
+    role: "admin",
+  },
+  {
+    title: "Invoice",
+    href: "/dashboard/invoice",
+    icon: "receipt",
+    label: "Invoice",
     role: "admin",
   },
 ];

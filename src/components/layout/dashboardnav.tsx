@@ -46,6 +46,17 @@ export function DashboardNav({ user }: any) {
               Documents
             </div>
           </Link>
+          <Link href="/dashboard/paypal-payments">
+            <div
+              className={cn(
+                "flex items-center px-3 py-2 rounded-md",
+                path === "/dashboard/documents" && "bg-gray-100 text-gray-900"
+              )}
+            >
+              <Icons.payment className="w-6 h-6 mr-2" />
+              Paypal Payments
+            </div>
+          </Link>
         </>
       )}
       {user?.user_metadata?.user_role === "admin" && (
