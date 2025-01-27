@@ -1,4 +1,3 @@
-import { getCurrentUser } from "@/app/actions/login";
 import BreadCrumb from "@/components/breadCrumb";
 import PaypalPayment from "@/components/paypalPayment";
 import { Heading } from "@/components/ui/heading";
@@ -9,7 +8,7 @@ const breadcrumbItems = [
 ];
 
 export default async function page() {
-  const user = await getCurrentUser();
+  // const user = await getCurrentUser();
   return (
     <ScrollArea className="h-full">
       <div>
@@ -22,7 +21,7 @@ export default async function page() {
         </div>
         <Separator />
         <div className="max-w-2xl my-5 mx-auto shadow-md p-4 bg-slate-100 rounded-md">
-          <PaypalPayment user={user} />
+          <PaypalPayment />
         </div>
       </div>
     </ScrollArea>
