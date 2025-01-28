@@ -113,8 +113,7 @@ export default function InvoiceDetails() {
             total: parseFloat(invoice?.amount?.value) || 0,
             method: invoice?.payments?.transactions?.[0]?.method || "PayPal",
             date: invoice?.payments?.transactions?.[0]?.payment_date || "",
-            transactionId:
-              invoice?.payments?.transactions?.[0]?.payment_id || "DRAFT",
+            transactionId: invoice?.id || "N/A",
             note: invoice?.payments?.transactions?.[0]?.note || "",
           },
         });
@@ -323,7 +322,7 @@ export default function InvoiceDetails() {
                   )}
                 </p>
                 <p>
-                  <span className="font-medium">Transaction ID:</span>{" "}
+                  <span className="font-medium">INV-Generate ID:</span>{" "}
                   {invoiceData.payment.transactionId}
                 </p>
                 <p className="text-green-600">{invoiceData.payment.note}</p>

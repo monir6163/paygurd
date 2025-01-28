@@ -5,7 +5,6 @@ import axios from "axios";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
 import {
   Table,
   TableBody,
@@ -18,6 +17,7 @@ import {
 export default function ViewAllPayPalInvoices() {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loader, setLoader] = useState(false);
 
   // function to get all invoices
   async function getAllInvoices() {
@@ -55,9 +55,45 @@ export default function ViewAllPayPalInvoices() {
     }
   }
 
+  // create invoice
+
+  const createInvoice = async () => {
+    try {
+      setLoader(true);
+      const { data } = await axios.post("/api/paypal/create-invoice");
+      if (data) {
+        toast.success("Invoice created successfully");
+        getAllInvoices();
+      }
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Log the response body to get the full error message
+        console.error(
+          "Error creating invoice:",
+          (error as any).response?.data || (error as Error).message
+        );
+      } else {
+        console.error("Error creating invoice:", error);
+      }
+      toast.error("Failed to create invoice");
+    } finally {
+      setLoader(false);
+    }
+  };
+
   if (loading) return <p>Loading invoices...</p>;
   return (
     <div>
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold">All PayPal Invoices</h1>
+        <button
+          onClick={createInvoice}
+          className="bg-black text-white px-4 py-2 rounded-md"
+          disabled={loader}
+        >
+          {loader ? "Creating..." : "Create Invoice"}
+        </button>
+      </div>
       <Table>
         <TableHeader>
           <TableRow>
@@ -86,8 +122,8 @@ export default function ViewAllPayPalInvoices() {
             <TableRow key={invoice.id}>
               <TableCell>{invoice.id}</TableCell>
               <TableCell>
-                {invoice.primary_recipients[0]?.billing_info?.name?.full_name ||
-                  "N/A"}
+                {invoice?.primary_recipients[0]?.billing_info?.name
+                  ?.full_name || "N/A"}
               </TableCell>
               <TableCell>
                 ${invoice.amount.value} {invoice.amount.currency_code}
@@ -108,9 +144,14 @@ export default function ViewAllPayPalInvoices() {
                   >
                     View
                   </Link>
-                  <Button onClick={() => deleteInvoice(invoice.id)}>
+                  <button
+                    className="
+                    bg-black text-white px-2 py-1 rounded-md
+                   "
+                    onClick={() => deleteInvoice(invoice.id)}
+                  >
                     Delete
-                  </Button>
+                  </button>
                 </div>
               </TableCell>
             </TableRow>

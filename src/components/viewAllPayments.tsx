@@ -92,7 +92,6 @@ export default function ViewAllPayments({ analytics }: { analytics: any }) {
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
-            <option value="COMPLETED">Completed</option>
           </select>
         </div>
         <div>
@@ -128,26 +127,21 @@ export default function ViewAllPayments({ analytics }: { analytics: any }) {
               <TableCell className="font-medium">{pay?.title}</TableCell>
               <TableCell>{pay?.amount}</TableCell>
               <TableCell>
-                {/* Dropdown for changing status */}
-                {pay?.status === "COMPLETED" ? (
-                  "COMPLETED"
-                ) : (
-                  <select
-                    value={pay?.status}
-                    onChange={(e) =>
-                      updatePaymentStatus(
-                        pay?.id,
-                        pay?.user_profiles?.email,
-                        e.target.value
-                      )
-                    }
-                    className="border border-gray-300 rounded-md px-2 py-1 capitalize"
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
-                  </select>
-                )}
+                <select
+                  value={pay?.status}
+                  onChange={(e) =>
+                    updatePaymentStatus(
+                      pay?.id,
+                      pay?.user_profiles?.email,
+                      e.target.value
+                    )
+                  }
+                  className="border border-gray-300 rounded-md px-2 py-1 capitalize"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
               </TableCell>
               <TableCell>{new Date(pay?.created_at).toDateString()}</TableCell>
             </TableRow>
