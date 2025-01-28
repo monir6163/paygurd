@@ -114,9 +114,19 @@ Check the `.env.example` file for reference.
    - PUT /api/admin/allDocuments?params=''
    - GET /api/admin/allDocuments
 7. Admin Dashboard Analytics, summary of total payments and breakdown by status
+
    - GET /api/admin/analytics
    - GET /api/admin/analytics/summery?params=''
    - GET /api/admin/analytics/summery/user?params=''
+
+8. paypall payment create and verify
+   - POST /api/paypal
+9. get all payment invoices
+   - GET /api/paypal/invoices
+10. get invoice details invoice id
+    - GET /api/paypal/invoice-details?params=''
+11. delete invoice invoice id
+    - DELETE /api/paypal/draft-invoice-delete?params=''
 
 ## Admin Credentials
 
@@ -131,7 +141,7 @@ Check the `.env.example` file for reference.
 ## Paypal sandbox Credentials
 
 - **Email:** sb-lkwym10694646@personal.example.com
-- **Password:** E\*V@>pX3 ## remove \
+- **Password:** E\*V@>pX3
 
 ## Live Demo
 
