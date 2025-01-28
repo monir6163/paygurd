@@ -2,7 +2,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { PaymentTypes } from "@/lib/types";
+import axios from "axios";
 import React from "react";
+import { toast } from "sonner";
+import AnalyticsCards from "./analyticsCards";
 import {
   Table,
   TableBody,
@@ -11,9 +14,6 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table";
-import axios from "axios";
-import { toast } from "sonner";
-import AnalyticsCards from "./analyticsCards";
 
 export default function ViewAllPayments({ analytics }: { analytics: any }) {
   const [filter, setFilter] = React.useState<string>("all");
@@ -92,6 +92,7 @@ export default function ViewAllPayments({ analytics }: { analytics: any }) {
             <option value="pending">Pending</option>
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
+            <option value="COMPLETED">Completed</option>
           </select>
         </div>
         <div>
@@ -128,21 +129,25 @@ export default function ViewAllPayments({ analytics }: { analytics: any }) {
               <TableCell>{pay?.amount}</TableCell>
               <TableCell>
                 {/* Dropdown for changing status */}
-                <select
-                  value={pay?.status}
-                  onChange={(e) =>
-                    updatePaymentStatus(
-                      pay?.id,
-                      pay?.user_profiles?.email,
-                      e.target.value
-                    )
-                  }
-                  className="border border-gray-300 rounded-md px-2 py-1 capitalize"
-                >
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
-                </select>
+                {pay?.status === "COMPLETED" ? (
+                  "COMPLETED"
+                ) : (
+                  <select
+                    value={pay?.status}
+                    onChange={(e) =>
+                      updatePaymentStatus(
+                        pay?.id,
+                        pay?.user_profiles?.email,
+                        e.target.value
+                      )
+                    }
+                    className="border border-gray-300 rounded-md px-2 py-1 capitalize"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="approved">Approved</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                )}
               </TableCell>
               <TableCell>{new Date(pay?.created_at).toDateString()}</TableCell>
             </TableRow>

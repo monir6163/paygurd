@@ -8,7 +8,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Input } from "./ui/input";
 
-export default function PaypalPayment() {
+export default function PaypalPayment({ user }: any) {
+  console.log("user", user);
   const [amount, setAmount] = useState<string>("");
   const router = useRouter();
   const initialOptions = {
@@ -47,9 +48,12 @@ export default function PaypalPayment() {
         toast.error("Order ID is required");
         return;
       }
-      const res = await axios.get(`/api/paypal?paymentId=${data.orderID}`, {
-        headers: { "Content-Type": "application/json" },
-      });
+      const res = await axios.get(
+        `/api/paypal?paymentId=${data.orderID}&userId=${user.id}`,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
       if (res?.data?.data?.status === "COMPLETED") {
         toast.success("Payment successful");
         router.push("/dashboard/complete-payment");

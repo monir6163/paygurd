@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { prisma } from "@/lib/prisma";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -104,6 +105,7 @@ export async function GET(request: NextRequest) {
     const accessToken = await getAccessToken();
     const { searchParams } = new URL(request.nextUrl);
     const paymentId = searchParams.get("paymentId") as string;
+    const userId = searchParams.get("userId") as string;
     if (!paymentId) {
       return NextResponse.json({
         status: 400,
@@ -132,6 +134,17 @@ export async function GET(request: NextRequest) {
     const invoiceData = await createInvoice(res);
 
     // store the payment details in the database
+
+    // console.log("Payment captured:", res.data);
+    const payload = {
+      title: "T-shirt",
+      amount:
+        res?.data?.purchase_units[0]?.payments?.captures[0]?.amount?.value,
+      status: res?.data?.status === "COMPLETED" ? "COMPLETED" : "PENDING",
+      user_id: userId,
+    };
+    // console.log("payload", payload);
+    await prisma.payments.create({ data: payload });
 
     return NextResponse.json({
       message: "Payment captured",
@@ -272,17 +285,62 @@ const createInvoice = async (res: any) => {
         },
       }
     );
-
+    const invoice_id = InvoiceRes.data.id;
+    const amount =
+      res?.data?.purchase_units[0]?.payments?.captures[0]?.amount?.value;
+    await markInvoiceAsPaid(invoice_id, accessToken, amount);
     return InvoiceRes.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
       // Log the response body to get the full error message
       console.error(
         "Error creating invoice:",
-        error.response?.data || error.message
+        (error as any).response?.data || (error as Error).message
       );
     } else {
       console.error("Error creating invoice:", error);
+    }
+  }
+};
+
+// mark as paid invoice
+const markInvoiceAsPaid = async (
+  invoice_id: string,
+  accessToken: string,
+  amount: string
+) => {
+  try {
+    const formattedDate =
+      new Date().toISOString().replace("T", " ").split(".")[0] + " UTC";
+
+    const response = await axios.post(
+      `${process.env.PAYPAL_SANDBOX_URL}/v1/invoicing/invoices/${invoice_id}/record-payment`,
+      {
+        method: "PAYPAL",
+        date: formattedDate,
+        note: "Payment was processed via PayPal successfully.",
+        amount: {
+          currency: "USD",
+          value: amount,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    console.log("✅ Invoice marked as PAID:", response.data);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        "❌ Error marking invoice as paid:",
+        error.response?.data || error.message
+      );
+    } else {
+      console.error("❌ Unexpected error:", error);
     }
   }
 };

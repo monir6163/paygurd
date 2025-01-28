@@ -1,3 +1,9 @@
+import ViewAllPayPalInvoices from "@/components/viewAllPayPalInvoices";
+
 export default function page() {
-  return <div>page</div>;
+  return (
+    <div>
+      <ViewAllPayPalInvoices />
+    </div>
+  );
 }
