@@ -128,6 +128,11 @@ Check the `.env.example` file for reference.
 - **Email:** lipipi8933@sfxeur.com
 - **Password:** 123456789
 
+## Paypal sandbox Credentials
+
+- **Email:** sb-lkwym10694646@personal.example.com
+- **Password:** E\*V@>pX3 ## remove \
+
 ## Live Demo
 
 The application is deployed on Vercel and can be accessed [here](https://payguard.vercel.app/).
