@@ -49,11 +49,11 @@ export async function POST(_request: NextRequest) {
           quantity: 2,
           unit_price: {
             currency: "USD",
-            value: Math.floor(Math.random() * 100).toString(),
+            value: "120",
           },
           tax: {
             name: "Tax",
-            percent: Math.floor(Math.random() * 10),
+            percent: 8,
           },
         },
         {
@@ -61,21 +61,21 @@ export async function POST(_request: NextRequest) {
           quantity: 1,
           unit_price: {
             currency: "USD",
-            value: Math.floor(Math.random() * 100).toString(),
+            value: "145",
           },
           tax: {
             name: "Tax",
-            percent: Math.floor(Math.random() * 10),
+            percent: 8,
           },
         },
       ],
       discount: {
-        percent: Math.floor(Math.random() * 10),
+        percent: 1,
       },
       shipping_cost: {
         amount: {
           currency: "USD",
-          value: Math.floor(Math.random() * 100).toString(),
+          value: "10",
         },
       },
       note: "Thank you for your business.",
