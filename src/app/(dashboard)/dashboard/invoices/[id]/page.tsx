@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import axios from "axios";
-import { format } from "date-fns";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import Link from "next/link";
@@ -14,41 +15,28 @@ import { toast } from "sonner";
 export default function InvoiceDetails() {
   const params = useParams()?.id;
   const [loading, setLoading] = useState(true);
-  const [invoiceData, setInvoiceData] = useState({
-    invoiceNumber: "",
-    invoiceDate: "",
-    draftDate: "",
+  const [invoiceData, setInvoiceData] = useState<any>({
+    due_amount: 0,
     status: "",
-    business: {
-      name: "",
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
+    invoice_number: 0,
+    invoice_date: "",
+    due_date: "",
+    note: "",
+    billTo: {
       email: "",
-      phone: "",
+      full_name: "",
     },
-    recipient: {
-      name: "",
-      billingAddress: "",
-      billingCity: "",
-      billingState: "",
-      billingZip: "",
-      email: "",
+    invoicer: {
+      email_address: "",
+      name: {
+        given_name: "",
+        surname: "",
+      },
     },
     items: [],
-    payment: {
-      subtotal: 0,
-      tax: 0,
-      shipping: 0,
-      total: 0,
-      method: "",
-      date: "",
-      transactionId: "",
-      note: "",
-    },
   });
   const invoiceRef = useRef(null);
+  console.log(invoiceData);
   useEffect(() => {
     async function getInvoiceDetails() {
       try {
@@ -59,63 +47,28 @@ export default function InvoiceDetails() {
         const invoice = data?.invoices;
 
         setInvoiceData({
-          invoiceNumber: invoice?.detail?.invoice_number || "N/A",
-          invoiceDate: invoice?.detail?.invoice_date || "",
-          draftDate: invoice?.detail?.invoice_date || "",
-          status: invoice?.status || "Pending",
-          business: {
-            name: invoice?.invoicer?.business_name || "N/A",
-            address: invoice?.invoicer?.address?.address_line_1 || "",
-            city: invoice?.invoicer?.address?.admin_area_2 || "",
-            state: invoice?.invoicer?.address?.admin_area_1 || "",
-            zip: invoice?.invoicer?.address?.postal_code || "",
-            email: invoice?.invoicer?.email_address || "",
-            phone:
-              invoice?.invoicer?.phones?.[0]?.phone_number?.national_number ||
-              "",
+          due_amount: invoice?.due_amount?.value,
+          status: invoice?.status,
+          invoice_number: invoice?.detail?.invoice_number,
+          invoice_date: invoice?.detail?.invoice_date,
+          due_date: invoice?.detail?.payment_term?.due_date,
+          note: invoice?.detail?.note,
+          billTo: {
+            email: invoice?.primary_recipients[0]?.billing_info?.email_address,
+            full_name: `${invoice?.primary_recipients[0]?.billing_info?.name?.given_name} ${invoice?.primary_recipients[0]?.billing_info?.name?.surname}`,
           },
-          recipient: {
-            name:
-              invoice?.primary_recipients?.[0]?.billing_info?.name?.full_name ||
-              "N/A",
-            billingAddress:
-              invoice?.primary_recipients?.[0]?.shipping_info?.address
-                ?.address_line_1 || "",
-            billingCity:
-              invoice?.primary_recipients?.[0]?.shipping_info?.address
-                ?.admin_area_2 || "",
-            billingState:
-              invoice?.primary_recipients?.[0]?.shipping_info?.address
-                ?.admin_area_1 || "",
-            billingZip:
-              invoice?.primary_recipients?.[0]?.shipping_info?.address
-                ?.postal_code || "",
-            email:
-              invoice?.primary_recipients?.[0]?.billing_info?.email_address ||
-              "",
+          invoicer: {
+            email_address: invoice?.invoicer?.email_address,
+            name: {
+              given_name: invoice?.invoicer?.name?.given_name,
+              surname: invoice?.invoicer?.name?.surname,
+            },
           },
-          items:
-            invoice?.items?.map((item: any) => ({
-              name: item?.name || "N/A",
-              quantity: parseInt(item?.quantity) || 1,
-              unitPrice: parseFloat(item?.unit_amount?.value) || 0,
-              total:
-                parseFloat(item?.unit_amount?.value) *
-                  parseInt(item?.quantity) || 0,
-            })) || [],
-          payment: {
-            subtotal:
-              parseFloat(invoice?.amount?.breakdown?.item_total?.value) || 0,
-            tax: parseFloat(invoice?.amount?.breakdown?.tax_total?.value) || 0,
-            shipping:
-              parseFloat(invoice?.amount?.breakdown?.shipping?.amount?.value) ||
-              0,
-            total: parseFloat(invoice?.amount?.value) || 0,
-            method: invoice?.payments?.transactions?.[0]?.method || "PayPal",
-            date: invoice?.payments?.transactions?.[0]?.payment_date || "",
-            transactionId: invoice?.id || "N/A",
-            note: invoice?.payments?.transactions?.[0]?.note || "",
-          },
+          items: invoice?.items?.map((item: any) => ({
+            name: item?.name,
+            quantity: item?.quantity,
+            unit_amount: item?.unit_amount?.value,
+          })),
         });
       } catch (error) {
         console.error("Error fetching invoice:", error);
@@ -136,18 +89,36 @@ export default function InvoiceDetails() {
 
   const handleDownloadPDF = async () => {
     const element = invoiceRef.current;
-    if (element) {
-      const canvas = await html2canvas(element, { scale: 2 });
+    if (!element) {
+      console.error("Invoice element is null");
+      return;
+    }
+
+    // Wait for the PayPal logo image to load before rendering
+    const logoImg = new Image();
+    logoImg.src =
+      "https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg";
+
+    logoImg.onload = async () => {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+      });
+
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`Invoice-${invoiceData?.invoiceNumber}.pdf`);
-    } else {
-      console.error("Invoice element is null");
-    }
+      pdf.save(`Invoice-${invoiceData?.invoice_number}.pdf`);
+    };
+
+    logoImg.onerror = () => {
+      console.error("Failed to load PayPal logo.");
+    };
   };
+
   if (loading) return <p>Loading invoice...</p>;
   return (
     <div>
@@ -173,159 +144,133 @@ export default function InvoiceDetails() {
               Download PDF
             </button>
           </div>
-          <div ref={invoiceRef}>
-            {/* Invoice Header */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <div className="flex justify-between items-start">
+
+          <div className="p-10" ref={invoiceRef}>
+            <div className="max-w-2xl mx-auto bg-white p-8 shadow-md">
+              <div className="flex justify-between items-center">
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg"
+                  className="h-10"
+                  alt="PayPal Logo"
+                />
+                <div className="text-right">
+                  <h1 className="text-2xl font-bold">INVOICE</h1>
+                  <p className="text-gray-500">
+                    {invoiceData?.invoicer?.name?.given_name}{" "}
+                  </p>
+                  <p className="text-gray-500">
+                    {invoiceData?.invoicer?.email_address}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center mt-6 p-4 bg-gray-100 rounded">
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                    Invoice #{invoiceData.invoiceNumber}
-                  </h1>
-                  <p className="text-gray-600 mt-1">
-                    Date:{" "}
-                    {format(
-                      new Date(
-                        invoiceData.invoiceDate || invoiceData.draftDate
-                      ),
-                      "MMMM dd, yyyy"
-                    )}
-                  </p>
-                </div>
-                <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full">
-                  {invoiceData.status}
-                </div>
-              </div>
-            </div>
-
-            {/* Business and Recipient Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                  From
-                </h2>
-                <div className="text-gray-600">
-                  <p className="font-medium text-gray-900">
-                    {invoiceData.business.name}
-                  </p>
-                  <p>{invoiceData.business.address}</p>
                   <p>
-                    {invoiceData.business.city}, {invoiceData.business.state}{" "}
-                    {invoiceData.business.zip}
+                    <span className="font-bold">Invoice No#:</span>{" "}
+                    {invoiceData?.invoice_number}
                   </p>
-                  <p className="mt-2">{invoiceData.business.email}</p>
-                  <p>{invoiceData.business.phone}</p>
-                </div>
-              </div>
-
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">To</h2>
-                <div className="text-gray-600">
-                  <p className="font-medium text-gray-900">
-                    {invoiceData.recipient.name}
-                  </p>
-                  <p>{invoiceData.recipient.billingAddress}</p>
                   <p>
-                    {invoiceData.recipient.billingCity},{" "}
-                    {invoiceData.recipient.billingState}{" "}
-                    {invoiceData.recipient.billingZip}
+                    <span className="font-bold">Invoice Date:</span>{" "}
+                    {invoiceData?.invoice_date}
                   </p>
-                  <p className="mt-2">{invoiceData.recipient.email}</p>
+                  <p>
+                    <span className="font-bold">Due Date:</span>{" "}
+                    {invoiceData?.due_date}
+                  </p>
+                </div>
+                <div>
+                  <p>
+                    <span className="font-bold">
+                      ${invoiceData?.due_amount || 0}
+                    </span>
+                  </p>
+                  <p>
+                    <span className="font-bold">Due Amount</span>
+                  </p>
+                  <p className="text-center bg-green-100 text-green-600 p-2 rounded">
+                    <span className="font-bold">
+                      {invoiceData?.status.replace(/_/g, " ")}
+                    </span>
+                  </p>
                 </div>
               </div>
-            </div>
 
-            {/* Items Table */}
-            <div className="bg-white rounded-lg shadow-sm overflow-hidden mb-6">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Item
+              <div className="mt-6">
+                <p className="font-bold">BILL TO</p>
+                <p>{invoiceData?.billTo?.full_name} </p>
+                <p>{invoiceData?.billTo?.email} </p>
+              </div>
+
+              <table className="w-full mt-6 border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="border border-gray-300 p-2 text-left">#</th>
+                    <th className="border border-gray-300 p-2 text-left">
+                      ITEMS
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Quantity
+                    <th className="border border-gray-300 p-2 text-left">
+                      QTY
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Unit Price
+                    <th className="border border-gray-300 p-2 text-left">
+                      PRICE
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total
+                    <th className="border border-gray-300 p-2 text-left">
+                      AMOUNT(S)
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {invoiceData?.items.map((item: any, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4 text-gray-900">{item.name}</td>
-                      <td className="px-6 py-4 text-right text-gray-600">
+                <tbody>
+                  {invoiceData?.items?.map((item: any, index: number) => (
+                    <tr key={index} className="bg-white">
+                      <td className="border border-gray-300 p-2">
+                        {index + 1}
+                      </td>
+                      <td className="border border-gray-300 p-2">
+                        {item.name}
+                      </td>
+                      <td className="border border-gray-300 p-2">
                         {item.quantity}
                       </td>
-                      <td className="px-6 py-4 text-right text-gray-600">
-                        ${item.unitPrice.toFixed(2)}
+                      <td className="border border-gray-300 p-2">
+                        ${item.unit_amount}
                       </td>
-                      <td className="px-6 py-4 text-right text-gray-900">
-                        ${item.total.toFixed(2)}
+                      <td className="border border-gray-300 p-2">
+                        ${item.quantity * item.unit_amount}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
 
-            {/* Payment Summary */}
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal</span>
-                  <span className="text-gray-900">
-                    ${invoiceData.payment.subtotal.toFixed(2)}
-                  </span>
+              <div className="mt-6 flex justify-between items-center">
+                <div className="text-left">
+                  <p className="font-bold">Note</p>
+                  <p>{invoiceData?.note}</p>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tax</span>
-                  <span className="text-gray-900">
-                    ${invoiceData.payment.tax.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Shipping</span>
-                  <span className="text-gray-900">
-                    ${invoiceData.payment.shipping.toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between pt-3 border-t border-gray-200">
-                  <span className="text-lg font-semibold text-gray-900">
-                    Total
-                  </span>
-                  <span className="text-lg font-semibold text-gray-900">
-                    ${invoiceData.payment.total.toFixed(2)}
-                  </span>
-                </div>
-              </div>
-            </div>
 
-            {/* Payment Details */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                Payment Information
-              </h2>
-              <div className="space-y-2 text-gray-600">
-                <p>
-                  <span className="font-medium">Payment Method:</span>{" "}
-                  {invoiceData.payment.method}
-                </p>
-                <p>
-                  <span className="font-medium">Payment Date:</span>{" "}
-                  {format(
-                    new Date(invoiceData.payment.date || invoiceData.draftDate),
-                    "MMMM dd, yyyy"
-                  )}
-                </p>
-                <p>
-                  <span className="font-medium">INV-Generate ID:</span>{" "}
-                  {invoiceData.payment.transactionId}
-                </p>
-                <p className="text-green-600">{invoiceData.payment.note}</p>
+                <div className="text-right">
+                  <p className="mb-5">
+                    Subtotal:{" "}
+                    <span className="font-bold">
+                      $
+                      {invoiceData?.items.reduce(
+                        (acc: number, item: any) =>
+                          acc + item.quantity * item.unit_amount,
+                        0
+                      )}
+                    </span>
+                  </p>
+                  <p className="text-xl font-bold">
+                    TOTAL: $
+                    {invoiceData?.items.reduce(
+                      (acc: number, item: any) =>
+                        acc + item.quantity * item.unit_amount,
+                      0
+                    )}
+                    USD
+                  </p>
+                </div>
               </div>
             </div>
           </div>
